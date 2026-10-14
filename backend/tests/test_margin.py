@@ -39,3 +39,16 @@ def test_api_generate_calls():
     calls = client.post("/calls/generate").json()
     assert len(calls) >= 1
     assert client.get("/calls").json()
+
+
+def test_generate_calls_does_not_duplicate_open_calls():
+    from app.main import store
+
+    client = TestClient(app)
+    store.calls.clear()
+    first = client.post("/calls/generate").json()
+    assert len(first) == 1
+    assert client.post("/calls/generate").json() == []
+    assert len(client.get("/calls").json()) == 1
+    client.post(f"/calls/{first[0]['id']}/status", params={"status": "settled"})
+    assert len(client.post("/calls/generate").json()) == 1  # settled calls don't block a new one

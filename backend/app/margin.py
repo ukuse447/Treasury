@@ -11,6 +11,14 @@ def collateral_balance(positions: list[CollateralPosition]) -> Decimal:
     )
 
 
+def required_collateral(agreement: Agreement, mark_to_market: Decimal) -> Decimal:
+    """Collateral the fund should have posted (negative: counterparty should post)."""
+    owed_by_fund = -mark_to_market + agreement.independent_amount
+    if owed_by_fund >= 0:
+        return max(Decimal(0), owed_by_fund - agreement.threshold)
+    return min(Decimal(0), owed_by_fund + agreement.threshold)
+
+
 def required_call(
     agreement: Agreement, mark_to_market: Decimal, positions: list[CollateralPosition]
 ) -> tuple[CallDirection, Decimal] | None:
@@ -20,14 +28,7 @@ def required_call(
     (incoming call). > 0 means the counterparty owes the fund (outgoing call).
     Returns None when the delta is below the minimum transfer amount.
     """
-    owed_by_fund = -mark_to_market + agreement.independent_amount
-    if owed_by_fund >= 0:
-        required = max(Decimal(0), owed_by_fund - agreement.threshold)
-    else:
-        # counterparty owes the fund: required is negative (counterparty posts)
-        required = min(Decimal(0), owed_by_fund + agreement.threshold)
-    # required > 0: fund should have posted this much; < 0: counterparty should have
-    delta = required - collateral_balance(positions)
+    delta = required_collateral(agreement, mark_to_market) - collateral_balance(positions)
     if abs(delta) < agreement.minimum_transfer_amount or delta == 0:
         return None
     direction = CallDirection.INCOMING if delta > 0 else CallDirection.OUTGOING

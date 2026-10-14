@@ -66,6 +66,9 @@ def summary() -> list[dict]:
                 "counterparty": agreement.counterparty,
                 "mark_to_market": mtm,
                 "collateral_balance": margin.collateral_balance(positions),
+                "required_collateral": margin.required_collateral(agreement, mtm),
+                "threshold": agreement.threshold,
+                "minimum_transfer_amount": agreement.minimum_transfer_amount,
                 "implied_call": {"direction": call[0], "amount": call[1]} if call else None,
             }
         )
@@ -79,6 +82,8 @@ def generate_calls() -> list[MarginCall]:
         exposure = store.exposures.get(aid)
         if not exposure:
             continue
+        if any(c.agreement_id == aid and c.status != CallStatus.SETTLED for c in store.calls.values()):
+            continue  # an open call already exists for this agreement
         positions = [p for p in store.positions.values() if p.agreement_id == aid]
         result = margin.required_call(agreement, exposure.mark_to_market, positions)
         if result:
