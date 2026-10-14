@@ -2,6 +2,8 @@
 
 Treasury workflow app for a hedge fund. MVP scope: **margin & collateral management**.
 
+See [docs/SPEC.md](docs/SPEC.md) for the functional specification (draft).
+
 ## Run
 
 Backend (http://localhost:8000, docs at /docs):
