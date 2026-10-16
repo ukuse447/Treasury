@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 from decimal import Decimal
+from enum import Enum
 
 from .models import Agreement, CallDirection, CollateralPosition
 
@@ -33,3 +35,36 @@ def required_call(
         return None
     direction = CallDirection.INCOMING if delta > 0 else CallDirection.OUTGOING
     return direction, abs(delta)
+
+
+class ExcessDeficitStatus(str, Enum):
+    EXCESS = "excess"
+    DEFICIT = "deficit"
+    DEFICIT_BELOW_MTA = "deficit_below_mta"
+
+
+@dataclass(frozen=True)
+class ExcessDeficit:
+    value: Decimal  # positive = excess, negative = deficit
+    status: ExcessDeficitStatus
+    posting_required: bool
+
+
+def excess_deficit(
+    agreement: Agreement, mark_to_market: Decimal, positions: list[CollateralPosition]
+) -> ExcessDeficit:
+    """Excess/Deficit per docs/SPEC.md M1.5, from the fund's point of view.
+
+    MtM > 0: excess (counterparty owes the fund), no posting.
+    MtM <= 0: cover = MtM + collateral posted. cover > 0 is an excess; otherwise a
+    deficit equal to cover. A deficit below the MTA does not require posting.
+    Threshold and independent amount are not applied (open question in the spec).
+    """
+    if mark_to_market > 0:
+        return ExcessDeficit(mark_to_market, ExcessDeficitStatus.EXCESS, False)
+    cover = mark_to_market + collateral_balance(positions)
+    if cover >= 0:
+        return ExcessDeficit(cover, ExcessDeficitStatus.EXCESS, False)
+    if -cover < agreement.minimum_transfer_amount:
+        return ExcessDeficit(cover, ExcessDeficitStatus.DEFICIT_BELOW_MTA, False)
+    return ExcessDeficit(cover, ExcessDeficitStatus.DEFICIT, True)

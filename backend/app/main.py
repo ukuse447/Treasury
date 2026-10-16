@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import margin
+from . import liquidity, margin
 from .models import (
     Agreement,
     CallStatus,
@@ -112,3 +112,13 @@ def update_call_status(call_id: str, status: CallStatus) -> MarginCall:
         raise HTTPException(404, "Unknown call")
     call.status = status
     return call
+
+
+@app.get("/liquidity/dashboard")
+def liquidity_dashboard() -> dict:
+    return liquidity.build_dashboard(
+        store.agreements,
+        list(store.positions.values()),
+        store.exposures,
+        store.cash_accounts,
+    )

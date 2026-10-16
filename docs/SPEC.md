@@ -16,7 +16,7 @@ audit trail. Read-only and approver roles are out of scope for v1 (single role).
 | 1 | Margin & Collateral | MVP built, needs workflow hardening |
 | 2 | Cash Management & Positions | Next |
 | 3 | Cash Forecasting & Liquidity | After 2 |
-| 4 | Liquidity Dashboard | Built incrementally on top of 1-3 |
+| 4 | Liquidity Dashboard | v0 built (tiles, impact by agreement, asset/liability by type); next priority after Margin & Collateral |
 
 ## 4. Cross-cutting requirements
 - **Reporting currency:** USD; every amount stored in its native currency with a USD equivalent.

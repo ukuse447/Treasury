@@ -17,11 +17,24 @@ class CallStatus(str, Enum):
     SETTLED = "settled"
 
 
+class AgreementType(str, Enum):
+    PB = "PB"
+    OTC = "OTC"
+    PBFI = "PBFI"
+    MNA = "MNA"
+
+
+class CollateralKind(str, Enum):
+    CASH = "cash"
+    SECURITY = "security"
+
+
 class Agreement(BaseModel):
     """Simplified CSA / margin agreement with a counterparty."""
 
     id: str
     counterparty: str
+    agreement_type: AgreementType = AgreementType.PB
     currency: str = "USD"
     threshold: Decimal = Decimal(0)
     minimum_transfer_amount: Decimal = Decimal(0)
@@ -35,6 +48,7 @@ class CollateralPosition(BaseModel):
     market_value: Decimal
     haircut: Decimal = Field(default=Decimal(0), ge=0, le=1)
     posted: bool = True  # True = posted by fund, False = received
+    kind: CollateralKind = CollateralKind.SECURITY
 
     @property
     def collateral_value(self) -> Decimal:
@@ -54,3 +68,14 @@ class MarginCall(BaseModel):
 class ExposureSnapshot(BaseModel):
     agreement_id: str
     mark_to_market: Decimal  # positive = counterparty owes fund
+
+
+class CashAccount(BaseModel):
+    """Cash account held at the custodian bank (BNY). USD only in this version."""
+
+    id: str
+    name: str
+    bank: str = "BNY"
+    entity: str
+    balance: Decimal
+    restricted: Decimal = Decimal(0)  # restricted or earmarked, not available

@@ -35,3 +35,20 @@ th,td{text-align:left;padding:.65rem .8rem;border-bottom:1px solid var(--line);f
 th{color:var(--muted);font-size:.75rem;text-transform:uppercase;background:#fafbfc}
 .r{text-align:right;font-variant-numeric:tabular-nums}.actions{display:flex;gap:.35rem}
 .empty{color:var(--muted)}
+.tabs{display:flex;gap:.25rem;border-bottom:1px solid var(--line);margin-bottom:1.5rem}
+.tabs button{border:none;background:none;border-bottom:2px solid transparent;border-radius:0;padding:.6rem 1rem;font-size:.95rem;color:var(--muted);margin-bottom:-1px}
+.tabs button.active{color:var(--ink);border-bottom-color:var(--blue);font-weight:600}
+.split{display:grid;gap:1rem}
+.chart{margin:0;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1rem 1.1rem}
+.chart figcaption{display:flex;justify-content:space-between;font-size:.85rem;color:#52514e;margin-bottom:.6rem}
+.legend{display:flex;gap:.9rem;align-items:center}.sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:.3rem}
+.sw.deficit,.dv-bar.deficit{background:#d03b3b}.sw.excess,.dv-bar.excess{background:#2a78d6}
+.dv-row{display:grid;grid-template-columns:150px 1fr 60px;align-items:center;gap:.6rem;font-size:.85rem;padding:.2rem 0;border-radius:4px}
+.dv-row:hover,.dv-row:focus{background:#f6f7f9;outline:none}
+.dv-name{color:#52514e}
+.dv-track{position:relative;height:20px}
+.dv-axis{position:absolute;left:50%;top:0;bottom:0;width:1px;background:#c3c2b7}
+.dv-bar{position:absolute;top:4px;height:12px;max-width:50%}
+.dv-bar.deficit{border-radius:4px 0 0 4px}.dv-bar.excess{border-radius:0 4px 4px 0}
+.badge.ed-excess{background:#e3ecfb;color:#1c47a3}.badge.ed-deficit{background:#fdecea;color:var(--red)}.badge.ed-deficit_below_mta{background:#fff4dd;color:var(--amber)}
+.note{color:var(--muted);font-size:.8rem;margin:.5rem 0 0}
